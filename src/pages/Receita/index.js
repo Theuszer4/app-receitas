@@ -1,11 +1,7 @@
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  StyleSheet,
-  FlatList,
-} from "react-native";
+import { View, Text, Image, ScrollView, StyleSheet } from "react-native";
+import { useRef } from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import YoutubePlayer from "react-native-youtube-iframe";
 import { receitas } from "../../receitas";
 
 receitaImage = {
@@ -33,6 +29,7 @@ receitaImage = {
 
 export default function Receita({ route }) {
   const { receitas } = route.params;
+  const playerRef = useRef();
   const tiposReceita = {
     entrada: "#FF4246",
     principal: "#FFB86E",
@@ -41,7 +38,7 @@ export default function Receita({ route }) {
   };
 
   return (
-    <View>
+    <ScrollView>
       <View style={style.containerImage}>
         <Image style={style.img} source={receitaImage[receitas.img]} />
       </View>
@@ -59,12 +56,50 @@ export default function Receita({ route }) {
         >
           <Text style={style.nomeIngredientes}>Ingredientes</Text>
         </View>
-  
         <View style={style.containerIngredientes}>
-          <Text style={style.textoIngredientes}>{receitas.ingredientes[1]}</Text>
+          {receitas.ingredientes.map((ingredientes, index) => {
+            return (
+              <View style={style.containerTextoIngredientes}>
+                <Text style={style.textoIngredientes} key={index}>
+                  <MaterialCommunityIcons name="circle" size={10} color="#909090" />  {ingredientes}
+                </Text>
+              </View>
+            );
+          })}
         </View>
       </View>
-    </View>
+
+      <View
+        style={[
+          style.nomeTipo,
+          { backgroundColor: tiposReceita[receitas.tipo] },
+        ]}
+      >
+        <Text style={style.nomeIngredientes}>Modo de Preparo</Text>
+      </View>
+
+      <View style={style.containerModoPreparo}>
+        {receitas.modo_preparo.map((preparo, index) => {
+          return (
+            <View style={style.containertextoModoPreparo}>
+              <Text style={style.textoModoPreparo}>
+                {index + 1}.  {preparo}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+
+      <View style={style.video}>
+        <YoutubePlayer
+          ref={playerRef}
+          height={"80%"}
+          width={"90%"}
+          videoId={receitas.id_video}
+          webViewStyle={{ opacity: 0.99 }}
+        />
+      </View>
+    </ScrollView>
   );
 }
 
@@ -105,14 +140,49 @@ const style = StyleSheet.create({
     color: "#ffff",
   },
 
-  containerIngredientes:{
-    width: '50%',
-    height: 250,
+  containerIngredientes: {
     display: "flex",
-    flexDirection: 'column'
+    flexDirection: "column",
+    padding: 10
+  },
+
+  textoIngredientes: {
+    display: "flex",
+  },
+
+  containerTextoIngredientes:{
+    display: 'flex',
+    alignItems: 'flex-start',
+    padding: 5,
   },
 
   textoIngredientes:{
-    display: 'flex',
+    fontSize: 16
   },
+
+  containerModoPreparo:{
+    display: "flex",
+    flexDirection: "column",
+    padding: 10,
+  },
+
+  containertextoModoPreparo:{
+    display: 'flex',
+    alignItems: "flex-start",
+    padding: 5
+  },
+
+  textoModoPreparo:{
+    fontSize: 16
+  },
+
+  video: {
+    display: "flex",
+    flexDirection: 'row',
+    width: "100%",
+    height: 250,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 25
+  }
 });
