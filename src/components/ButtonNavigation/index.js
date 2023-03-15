@@ -2,7 +2,7 @@ import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useEffect, useRef } from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Animatable from "react-native-animatable";
-
+import { useFonts, Poppins_600SemiBold } from "@expo-google-fonts/poppins";
 function ButtonNavigation(props) {
   const { name, pageName, backColor, onPress, accessibilityState } = props;
   const focused = accessibilityState.selected;
@@ -11,14 +11,25 @@ function ButtonNavigation(props) {
   const refViewText = useRef(null);
 
   useEffect(() => {
-    if (focused) {
-      refView.current.animate({ 0: { scale: 0 }, 1: { scale: 1 } });
-      refViewText.current.animate({ 0: { scale: 0 }, 1: { scale: 1 } });
-    } else {
-      refView.current.animate({ 0: { scale: 1 }, 1: { scale: 1 } });
-      refViewText.current.animate({ 0: { scale: 1 }, 1: { scale: 1 } });
+    if (refView.current && refViewText.current) {
+      if (focused) {
+        refView.current.animate({ 0: { scale: 0 }, 1: { scale: 1 } });
+        refViewText.current.animate({ 0: { scale: 0 }, 1: { scale: 1 } });
+      } else {
+        refView.current.animate({ 0: { scale: 1 }, 1: { scale: 1 } });
+        refViewText.current.animate({ 0: { scale: 1 }, 1: { scale: 1 } });
+      }
     }
+
   }, [focused]);
+
+  let [fontsLoaded] = useFonts({
+    Poppins_600SemiBold,
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <TouchableOpacity
@@ -44,6 +55,7 @@ function ButtonNavigation(props) {
 const styles = StyleSheet.create({
   button: {
     height: "100%",
+
     alignItems: "center",
     justifyContent: "center",
   },
@@ -57,7 +69,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#FFF",
-    fontWeight: "500"
+    fontFamily: "Poppins_600SemiBold",
   },
 });
 export default ButtonNavigation;
